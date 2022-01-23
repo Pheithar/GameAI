@@ -1,0 +1,5 @@
+pipreqs==0.4.11
+isort==5.10.1
+black==21.12b0
+flake8==4.0.1
+mypy==0.931
