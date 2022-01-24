@@ -3,7 +3,7 @@ import numpy as np
 
 class Static:
     """
-    Static element
+    Static element. Orientation must be passed in angles
     """
 
     def __init__(self, position: np.ndarray, orientation: float) -> None:

@@ -6,7 +6,7 @@ requirements:
 	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
 	$(PYTHON_INTERPRETER) -m pip install -e .
 
-requirements_devel: requirements
+requirements_devel:
 	$(PYTHON_INTERPRETER) -m pip install -r requirements_devel.txt
 
 styling:

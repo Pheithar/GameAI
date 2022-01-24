@@ -1,3 +1,4 @@
+from math import gamma
 import sys
 from typing import Tuple
 
@@ -5,7 +6,11 @@ import numpy as np
 import pygame
 
 from gameAI.movement.movementStructures.static import Static
+from gameAI.utils.pygameUtils import rotate_polygon_2d
+from gameAI.utils import colors
 from gameAI.utils import actions
+
+TRIANGLE_IN_ZERO = np.array([[-5, 5], [5, 5], [0, -5]])
 
 
 class PyGame:
@@ -23,6 +28,8 @@ class PyGame:
 
         pygame.init()
 
+        pygame.display.set_caption(action)
+
         while True:
 
             self.clock.tick(self.wait_time)
@@ -31,7 +38,7 @@ class PyGame:
 
             # ACTIONS
             if action == actions.ACTION_MOVEMENT_SEEK:
-                self.display_static(Static(np.array([100, 100]), 75))
+                self.display_static(Static(np.array([100, 100]), 180))
 
             # EVENTS
             for event in pygame.event.get():
@@ -44,14 +51,14 @@ class PyGame:
 
     def display_static(self, static: Static) -> None:
 
-        position = np.array([[0, 10], [10, 10], [5, 0]])
-
-        # Rotate
-        position = [
-            pygame.math.Vector2(x[0], x[1]).rotate(static.orientation) for x in position
-        ]
+        position = TRIANGLE_IN_ZERO
 
         # Move
         position = position + static.position
 
-        pygame.draw.polygon(self.screen, (255, 0, 0), position)
+        # Rotate
+        position = rotate_polygon_2d(
+            static.position, position, static.orientation
+        )
+
+        pygame.draw.polygon(self.screen, colors.GREEN, list(position))
