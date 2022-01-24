@@ -1,0 +1,37 @@
+name: "Run styling and typing"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+         ${{ runner.os }}-pip-
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.10
+    - name: Install requirements
+      run: |
+        make requirements
+    - name: Install additional requirements
+      run: |
+        make requirements_devel
+    - name: Fix and check styling
+      run: |
+        make styling
+    - name: Check typing
+      run: |
+        make typing
