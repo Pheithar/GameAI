@@ -11,12 +11,12 @@ class Kinematic:
     def __init__(
         self,
         position: np.ndarray,
-        orientaton: float,
+        orientation: float,
         velocity: np.ndarray,
         rotation: float,
     ) -> None:
         self.position = position
-        self.orientaton = orientaton
+        self.orientation = orientation
         self.velocity = velocity
         self.rotation = rotation
 
@@ -30,9 +30,9 @@ class Kinematic:
         """
 
         # Update position and rotation
-        self.position += self.velocity * time
-        self.orientaton += self.rotation * time
+        self.position = self.position + self.velocity * time
+        self.orientation = self.orientation + self.rotation * time
 
         # Update velocity and rotation
-        self.velocity = steering.linear * time
-        self.rotation = steering.angular * time
+        self.velocity = self.velocity + steering.linear * time
+        self.rotation = self.rotation + steering.angular * time
