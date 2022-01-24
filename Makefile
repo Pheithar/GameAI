@@ -1,5 +1,3 @@
-.PHONY: 
-
 PYTHON_INTERPRETER = python3
 
 
