@@ -17,10 +17,15 @@ All the commands should be runned from the root folder.
 #### General commands
 
 `make requirements`: Install pip dependencies from the `requirements.txt`.
+
 `make requirements_devel`: Install additional dependencies for development. Should not be necessary for running the project.
+
 `make styling`: Fix and check sytylyng from `pep8` using `black`, `isort` and `flake8`.
+
 `make typing`: Checks typing using `mypy`.
+
 `make create_requirements`: Creates the `requirements.txt` file from the relevant dependencies using `pipreqs`.
+
 `make clean`: Remove additional files such as the pycache.
 
 #### Project commands
