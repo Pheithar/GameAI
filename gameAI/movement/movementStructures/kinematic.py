@@ -1,6 +1,9 @@
+import math
+
 import numpy as np
 
 from gameAI.movement.movementStructures.steeringOutput import SteeringOutput
+from gameAI.utils.movementUtils import FRICCION
 
 
 class Kinematic:
@@ -11,9 +14,9 @@ class Kinematic:
     def __init__(
         self,
         position: np.ndarray,
-        orientation: float,
-        velocity: np.ndarray,
-        rotation: float,
+        orientation: float = 0,
+        velocity: np.ndarray = np.array([0, 0]),
+        rotation: float = 0,
     ) -> None:
         self.position = position
         self.orientation = orientation
@@ -34,5 +37,11 @@ class Kinematic:
         self.orientation = self.orientation + self.rotation * time
 
         # Update velocity and rotation
-        self.velocity = self.velocity + steering.linear * time
+        self.velocity = self.velocity * FRICCION + steering.linear * time
         self.rotation = self.rotation + steering.angular * time
+
+    def new_orientation(self) -> None:
+        """
+        Set orientation in the direction of the movement
+        """
+        self.orientation = math.degrees(math.atan2(self.velocity[0], -self.velocity[1]))

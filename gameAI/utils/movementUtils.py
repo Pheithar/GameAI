@@ -4,6 +4,8 @@ import numpy as np
 Additional functions for the movement algorithms
 """
 
+FRICCION = 0.995
+
 
 def normalize(vector: np.ndarray) -> np.ndarray:
     """

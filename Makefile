@@ -27,5 +27,11 @@ clean:
 
 # Run code
 
-run_movement:
+run_movement_seek:
 	$(PYTHON_INTERPRETER) gameAI/main.py movement_seek
+
+run_movement_flee:
+	$(PYTHON_INTERPRETER) gameAI/main.py movement_flee
+
+run_movement_seek_arrive:
+	$(PYTHON_INTERPRETER) gameAI/main.py movement_seek_arrive

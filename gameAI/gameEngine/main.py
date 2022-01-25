@@ -1,6 +1,6 @@
 import sys
 import time
-from typing import Tuple
+from typing import Tuple, Union
 
 import numpy as np
 import pygame
@@ -13,7 +13,7 @@ from gameAI.utils.pygameUtils import rotate_polygon_2d
 
 TRIANGLE_IN_ZERO = np.array([[-5, 5], [5, 5], [0, -5]])
 
-MOVEMENT_SPEED = 75
+MOVEMENT_SPEED = 100
 
 
 class PyGame:
@@ -37,13 +37,35 @@ class PyGame:
         # Initialize time
         prev_time = time.time()
 
+        #####################################################################
         # Setup depending on action
+        #####################################################################
+        # --------------
+        # ACTION_MOVEMENT_SEEK
+        # --------------
         if action == actions.ACTION_MOVEMENT_SEEK:
 
-            target = Static(np.array([512, 256]), 180)
-            character = Kinematic(np.array([500, 50]), 0, np.array([0, 0]), 0)
+            target = Static(np.array([512, 256]))
+            character = Kinematic(np.array([50, 50]))
 
             kseek = KinematicSeek(character, target, MOVEMENT_SPEED)
+        # --------------
+        # ACTION_MOVEMENT_FLEE
+        # --------------
+        elif action == actions.ACTION_MOVEMENT_FLEE:
+            target = Static(np.array([5, 5]))
+            character = Kinematic(np.array([7, 7]))
+
+            kseek = KinematicSeek(character, target, MOVEMENT_SPEED)
+        # --------------
+        # ACTION_MOVEMENT_SEEK_ARRIVE
+        # --------------
+        elif action == actions.ACTION_MOVEMENT_SEEK_ARRIVE:
+
+            target = Static(np.array([512, 256]))
+            character = Kinematic(np.array([50, 50]))
+
+            kseek = KinematicSeek(character, target, MOVEMENT_SPEED, 20)
 
         while True:
 
@@ -56,15 +78,35 @@ class PyGame:
             dt = now - prev_time
             prev_time = now
 
+            #################################################################
             # ACTIONS
+            #################################################################
+            # --------------
+            # ACTION_MOVEMENT_SEEK
+            # --------------
             if action == actions.ACTION_MOVEMENT_SEEK:
 
-                self.display_static(target)
-
-                self.display_static(character, color=colors.GREEN)
-
+                self.display_element(target)
+                self.display_element(character, color=colors.GREEN)
                 steering = kseek.get_steering()
+                character.update(steering, dt)
 
+            # --------------
+            # ACTION_MOVEMENT_FLEE
+            # --------------
+            elif action == actions.ACTION_MOVEMENT_FLEE:
+                self.display_element(target)
+                self.display_element(character, color=colors.GREEN)
+                steering = kseek.get_steering(seek=False)
+                character.update(steering, dt)
+            # --------------
+            # ACTION_MOVEMENT_SEEK_ARRIVE
+            # --------------
+            elif action == actions.ACTION_MOVEMENT_SEEK_ARRIVE:
+
+                self.display_element(target)
+                self.display_element(character, color=colors.GREEN)
+                steering = kseek.get_steering(arrive=True)
                 character.update(steering, dt)
 
             # EVENTS
@@ -76,20 +118,26 @@ class PyGame:
 
             pygame.display.flip()
 
-    def display_static(
-        self, static: Static, color: Tuple[int, int, int] = colors.RED
+    def display_element(
+        self,
+        element: Union[Static, Kinematic],
+        color: Tuple[int, int, int] = colors.RED,
     ) -> None:
         """
-        Draws on the screen the input static
+        Draws on the screen the input element
+
+        Args:
+            element: Element to draw
+            color (optional): color to draw the element with
         """
 
         position = TRIANGLE_IN_ZERO
 
         # Move
-        position = position + static.position
+        position = position + element.position
 
         # Rotate
-        position = rotate_polygon_2d(static.position, position, static.orientation)
+        position = rotate_polygon_2d(element.position, position, element.orientation)
 
         # Draw
         pygame.draw.polygon(self.screen, color, list(position))
