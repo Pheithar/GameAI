@@ -20,7 +20,7 @@ All the commands should be runned from the root folder.
 
 `make requirements_devel`: Install additional dependencies for development. Should not be necessary for running the project.
 
-`make styling`: Fix and check sytylyng from `pep8` using `black`, `isort` and `flake8`.
+`make styling`: Fix and check styling from `pep8` using `black`, `isort` and `flake8`.
 
 `make typing`: Checks typing using `mypy`.
 
