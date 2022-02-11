@@ -35,3 +35,6 @@ run_movement_flee:
 
 run_movement_seek_arrive:
 	$(PYTHON_INTERPRETER) gameAI/main.py movement_seek_arrive
+
+run_movement_wandering:
+	$(PYTHON_INTERPRETER) gameAI/main.py movement_wandering

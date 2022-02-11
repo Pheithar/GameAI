@@ -3,7 +3,7 @@ import numpy as np
 from gameAI.movement.movementStructures.kinematic import Kinematic
 from gameAI.movement.movementStructures.static import Static
 from gameAI.movement.movementStructures.steeringOutput import SteeringOutput
-from gameAI.utils.movementUtils import normalize
+from gameAI.utils.movementUtils import as_vector, normalize, random_binomial
 
 
 class KinematicSeek:
@@ -12,12 +12,18 @@ class KinematicSeek:
     """
 
     def __init__(
-        self, character: Static, target: Kinematic, max_speed: float, radius: float = 0
+        self,
+        character: Static,
+        target: Kinematic,
+        max_speed: float,
+        radius: float = 0,
+        max_rotation: float = 180,
     ) -> None:
         self.character = character
         self.target = target
         self.max_speed = max_speed
         self.radius = radius
+        self.max_rotation = max_rotation
 
     def get_steering(
         self, set_orientation: bool = True, seek: bool = True, arrive: bool = False
@@ -31,6 +37,9 @@ class KinematicSeek:
             seek (optional): Whether the algorithm seeks or flee
             arrive (optional): Whether the algorithm uses distance to
             set speed. Not done for fleeing
+        Returns:
+            result: Steering output with the information to update the
+            character position
         """
 
         result = SteeringOutput([], 0)
@@ -64,5 +73,31 @@ class KinematicSeek:
 
         if set_orientation:
             self.character.new_orientation()
+
+        return result
+
+    def get_wandering(self, set_orientation: bool = True) -> SteeringOutput:
+        """
+        Returns the stering output resulting from using a wandering approach.
+        It means it has some random rotation in it and do not have an objective.
+
+        Args:
+            set_orientation (optional): Whether or not to set orientation
+            movement directions
+
+        Returns:
+            result: Steering output with the information to update the
+            character position
+        """
+
+        result = SteeringOutput([], 0)
+
+        result.linear = self.max_speed * as_vector(self.character.orientation)
+
+        result.angular = random_binomial() * self.max_rotation
+
+        if set_orientation:
+            # self.character.new_orientation()
+            pass
 
         return result

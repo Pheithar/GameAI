@@ -24,9 +24,12 @@ class PyGame:
 
         self.frame_rate = frame_rate
 
-    def init(self, action: str):
+    def init(self, action: str) -> None:
         """
         Run the action from the module and play it on screen
+
+        Args:
+            action: the action to run
         """
 
         pygame.init()
@@ -40,6 +43,55 @@ class PyGame:
         #####################################################################
         # Setup depending on action
         #####################################################################
+        # --------------
+        # MOVEMENT ACTIONS
+        # --------------
+        if action in actions.MOVEMENT_ACTIONS:
+            target, character, kseek = self.movement_actions_setup(action)
+
+        while True:
+
+            self.clock.tick(self.frame_rate)
+
+            self.screen.fill(colors.BLACK)
+
+            # time with deltatime to avoid framerate tied with speed
+            now = time.time()
+            dt = now - prev_time
+            prev_time = now
+
+            #################################################################
+            # ACTIONS
+            #################################################################
+            # --------------
+            # MOVEMENT ACTIONS
+            # --------------
+            self.run_movement_actions(action, target, character, kseek, dt)
+
+            # EVENTS
+            for event in pygame.event.get():
+
+                # Close game
+                if event.type == pygame.QUIT:
+                    sys.exit()
+
+            pygame.display.flip()
+
+    def movement_actions_setup(
+        self, action: str
+    ) -> Tuple[Static, Kinematic, KinematicSeek]:
+        """
+        Setup the appropirate parameters given that it is a movement action
+
+        Args:
+            action: action to do the setup for
+
+        Return:
+            target: target of the movement action
+            character: character that does the moving
+            kseek: kinematic seek instance with appropriate parameters
+        """
+
         # --------------
         # ACTION_MOVEMENT_SEEK
         # --------------
@@ -66,57 +118,71 @@ class PyGame:
             character = Kinematic(np.array([50, 50]))
 
             kseek = KinematicSeek(character, target, MOVEMENT_SPEED, 20)
+        # --------------
+        # ACTION_MOVEMENT_WANDERING
+        # --------------
+        elif action == actions.ACTION_MOVEMENT_WANDERING:
 
-        while True:
+            target = None
+            character = Kinematic(np.array([512, 450]))
 
-            self.clock.tick(self.frame_rate)
+            kseek = KinematicSeek(character, None, MOVEMENT_SPEED / 10)
 
-            self.screen.fill(colors.BLACK)
+        return target, character, kseek
 
-            # time with deltatime to avoid framerate tied with speed
-            now = time.time()
-            dt = now - prev_time
-            prev_time = now
+    def run_movement_actions(
+        self,
+        action: str,
+        target: Static,
+        character: Kinematic,
+        kseek: KinematicSeek,
+        dt: float,
+    ) -> None:
+        """
+        Runs the appropriate movement action
 
-            #################################################################
-            # ACTIONS
-            #################################################################
-            # --------------
-            # ACTION_MOVEMENT_SEEK
-            # --------------
-            if action == actions.ACTION_MOVEMENT_SEEK:
+        Args:
+            action: action to run
+            target: target of the action
+            character: character that runs the action
+            dt: timestep of current loop
+        """
+        # --------------
+        # ACTION_MOVEMENT_SEEK
+        # --------------
+        if action == actions.ACTION_MOVEMENT_SEEK:
 
-                self.display_element(target)
-                self.display_element(character, color=colors.GREEN)
-                steering = kseek.get_steering()
-                character.update(steering, dt)
+            self.display_element(target)
+            self.display_element(character, color=colors.GREEN)
+            steering = kseek.get_steering()
+            character.update(steering, dt)
 
-            # --------------
-            # ACTION_MOVEMENT_FLEE
-            # --------------
-            elif action == actions.ACTION_MOVEMENT_FLEE:
-                self.display_element(target)
-                self.display_element(character, color=colors.GREEN)
-                steering = kseek.get_steering(seek=False)
-                character.update(steering, dt)
-            # --------------
-            # ACTION_MOVEMENT_SEEK_ARRIVE
-            # --------------
-            elif action == actions.ACTION_MOVEMENT_SEEK_ARRIVE:
+        # --------------
+        # ACTION_MOVEMENT_FLEE
+        # --------------
+        elif action == actions.ACTION_MOVEMENT_FLEE:
+            self.display_element(target)
+            self.display_element(character, color=colors.GREEN)
+            steering = kseek.get_steering(seek=False)
+            character.update(steering, dt)
+        # --------------
+        # ACTION_MOVEMENT_SEEK_ARRIVE
+        # --------------
+        elif action == actions.ACTION_MOVEMENT_SEEK_ARRIVE:
 
-                self.display_element(target)
-                self.display_element(character, color=colors.GREEN)
-                steering = kseek.get_steering(arrive=True)
-                character.update(steering, dt)
+            self.display_element(target)
+            self.display_element(character, color=colors.GREEN)
+            steering = kseek.get_steering(arrive=True)
+            character.update(steering, dt)
+        # --------------
+        # ACTION_MOVEMENT_WANDERING
+        # --------------
+        elif action == actions.ACTION_MOVEMENT_WANDERING:
 
-            # EVENTS
-            for event in pygame.event.get():
-
-                # Close game
-                if event.type == pygame.QUIT:
-                    sys.exit()
-
-            pygame.display.flip()
+            # self.display_element(target)
+            self.display_element(character, color=colors.GREEN)
+            steering = kseek.get_wandering()
+            character.update(steering, dt)
 
     def display_element(
         self,
