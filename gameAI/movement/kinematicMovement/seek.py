@@ -41,7 +41,7 @@ class KinematicSeek:
             result: Steering output with the information to update the
             character position
         """
-
+        
         result = SteeringOutput([], 0)
 
         # Get direction from character to target

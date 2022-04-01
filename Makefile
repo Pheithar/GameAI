@@ -1,5 +1,7 @@
 PYTHON_INTERPRETER = python3
 
+create_metadata:
+	$(PYTHON_INTERPRETER) setup.py develop
 
 requirements:
 	$(PYTHON_INTERPRETER) -m pip install -U pip setuptools wheel
@@ -16,7 +18,6 @@ styling:
 
 typing:
 	mypy gameAI
-	
 
 create_requirements:
 	pipreqs --force --savepath requirements.txt gameAI
